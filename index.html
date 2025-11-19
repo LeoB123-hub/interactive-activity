@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>How to Write a Conclusion — Interactive Checks</title>
+
+  <!-- H5P Core CSS -->
+  <link rel="stylesheet" href="https://h5p.org/sites/all/modules/h5p/library/js/h5p-resizer.js">
+  <link rel="stylesheet" href="https://h5p.org/sites/default/files/h5p-core-1.24.css">
+  <link rel="stylesheet" href="https://h5p.org/sites/default/files/h5p-player-1.24.css">
+
+  <!-- H5P Core JS -->
+  <script src="https://h5p.org/sites/default/files/h5p-core-1.24.js"></script>
+  <script src="https://h5p.org/sites/default/files/h5p-player-1.24.js"></script>
+</head>
+
+<body>
+  <h2>How to Write a Conclusion — Interactive Checks</h2>
+  <div id="h5p-container"></div>
+
+  <script>
+    // ----------- YOUR INTERACTIVE VIDEO JSON -----------------
+    const h5pContent = {
+      "interactiveVideo": {
+        "video": {
+          "startScreenOptions": {
+            "hideStartTitle": false,
+            "hideStartSubtitle": true
+          },
+          "files": [
+            {
+              "path": "https://www.youtube.com/watch?v=9ME797FmLnc",
+              "mime": "video/youtube"
+            }
+          ],
+          "startTime": 0
+        },
+        "assets": {
+          "interactions": [
+            {
+              "action": {
+                "library": "H5P.Text 1.1",
+                "params": {
+                  "text": "<h3>The job of a conclusion</h3><p>A strong conclusion usually does four things:<br>1) <strong>Restates</strong> the thesis in fresh words,<br>2) <strong>Synthesizes</strong> key points (don’t just list),<br>3) Answers <em>So what?</em> (significance/implications),<br>4) Leaves a <strong>closing thought</strong> (prediction, recommendation, or call to action).<br><em>Avoid introducing new evidence.</em></p>"
+                },
+                "subContentId": "cv1-info"
+              },
+              "x": 50,
+              "y": 20,
+              "width": 52,
+              "height": 22,
+              "displayType": "poster",
+              "pause": true,
+              "label": "The job of a conclusion",
+              "duration": { "from": 15, "to": 40 }
+            },
+
+            {
+              "action": {
+                "library": "H5P.SingleChoiceSet 1.11",
+                "params": {
+                  "behaviour": { "autoContinue": true, "passPercentage": 100 },
+                  "questions": [
+                    {
+                      "question": "Which sentence <strong>best restates</strong> a thesis without repeating it?",
+                      "answers": [
+                        { "text": "Universities must reduce food waste.", "correct": false },
+                        { "text": "To cut costs and emissions, universities should standardise composting across cafeterias.", "correct": true },
+                        { "text": "I already said universities must reduce food waste.", "correct": false }
+                      ],
+                      "feedback": {
+                        "chosenFeedback": [
+                          "Background statement, too broad.",
+                          "Correct: paraphrases the claim with clearer focus.",
+                          "Meta-commentary, not a restatement."
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "subContentId": "cv2-scs"
+              },
+              "x": 24,
+              "y": 66,
+              "width": 50,
+              "displayType": "button",
+              "pause": true,
+              "label": "Restate vs repeat",
+              "duration": { "from": 55, "to": 95 }
+            },
+
+            {
+              "action": {
+                "library": "H5P.TrueFalse 1.8",
+                "params": {
+                  "question": "It’s fine to introduce a brand-new statistic in the conclusion if it’s compelling.",
+                  "correct": false,
+                  "feedbackCorrect": "Correct: don’t add new evidence. Synthesize what you’ve already argued and explain why it matters.",
+                  "feedbackIncorrect": "Not quite. New evidence belongs in the body paragraphs, not the conclusion."
+                },
+                "subContentId": "cv3-tf"
+              },
+              "x": 60,
+              "y": 70,
+              "width": 36,
+              "displayType": "button",
+              "pause": true,
+              "label": "New evidence?",
+              "duration": { "from": 96, "to": 115 }
+            },
+
+            {
+              "action": {
+                "library": "H5P.MultiChoice 1.16",
+                "params": {
+                  "question": "Put the parts in an effective <strong>conclusion flow</strong> (choose all that apply in order shown).",
+                  "answers": [
+                    { "text": "Restated (paraphrased) thesis", "correct": true },
+                    { "text": "Synthesis of key points", "correct": true },
+                    { "text": "So-what / implications", "correct": true },
+                    { "text": "Closing thought / call to action", "correct": true }
+                  ],
+                  "overallFeedback": [
+                    { "from": 0, "to": 4, "feedback": "Aim for: Restated thesis → Synthesis → Implications → Closing thought." }
+                  ],
+                  "behaviour": {
+                    "type": "multi",
+                    "enableRetry": true,
+                    "enableSolutionsButton": true,
+                    "randomAnswers": false
+                  }
+                },
+                "subContentId": "cv4-order"
+              },
+              "x": 16,
+              "y": 66,
+              "width": 55,
+              "displayType": "button",
+              "pause": true,
+              "label": "Classic flow",
+              "duration": { "from": 125, "to": 165 }
+            },
+
+            {
+              "action": {
+                "library": "H5P.Blanks 1.12",
+                "params": {
+                  "text": "<p><strong>Fill the signposts:</strong> <em>In sum</em>, the evidence shows X; <em>____</em>, universities should adopt Y to achieve Z.</p>",
+                  "blanks": [
+                    { "answer": "therefore", "tolerance": 0, "caseSensitive": false, "alternatives": ["thus", "consequently"] }
+                  ],
+                  "behaviour": { "enableRetry": true, "instantFeedback": true }
+                },
+                "subContentId": "cv5-blanks"
+              },
+              "x": 42,
+              "y": 66,
+              "width": 45,
+              "displayType": "button",
+              "pause": true,
+              "label": "Signal words",
+              "duration": { "from": 166, "to": 190 }
+            },
+
+            {
+              "action": {
+                "library": "H5P.MultiChoice 1.16",
+                "params": {
+                  "question": "Which moves show <strong>synthesis</strong> (not just summary)?",
+                  "answers": [
+                    { "text": "Connect how points fit together to support the claim", "correct": true },
+                    { "text": "Explain the implication of two findings when combined", "correct": true },
+                    { "text": "List each point again in the same words as the body", "correct": false },
+                    { "text": "Show how your points answer the research question", "correct": true }
+                  ],
+                  "overallFeedback": [
+                    { "from": 0, "to": 3, "feedback": "Synthesis = relationships + implications, not repetition." }
+                  ],
+                  "behaviour": {
+                    "type": "multi",
+                    "enableRetry": true,
+                    "enableSolutionsButton": true,
+                    "randomAnswers": true
+                  }
+                },
+                "subContentId": "cv6-multiselect"
+              },
+              "x": 20,
+              "y": 68,
+              "width": 55,
+              "displayType": "button",
+              "pause": true,
+              "label": "Synthesis moves",
+              "duration": { "from": 191, "to": 230 }
+            },
+
+            {
+              "action": {
+                "library": "H5P.Text 1.1",
+                "params": {
+                  "text": "<h3>Play the <em>So What?</em> game</h3><p>If your conclusion feels flat, test each sentence with “So what?” Keep lines that show why your claim <strong>matters now</strong> (timeliness, audience impact, next steps).</p>"
+                },
+                "subContentId": "cv7-snippet"
+              },
+              "x": 58,
+              "y": 18,
+              "width": 50,
+              "height": 20,
+              "displayType": "poster",
+              "pause": true,
+              "label": "So What?",
+              "duration": { "from": 231, "to": 250 }
+            },
+
+            {
+              "action": {
+                "library": "H5P.SingleChoiceSet 1.11",
+                "params": {
+                  "behaviour": { "autoContinue": true, "passPercentage": 100 },
+                  "questions": [
+                    {
+                      "question": "Which final line works best for an academic essay?",
+                      "answers": [
+                        { "text": "That’s all I have to say.", "correct": false },
+                        { "text": "Standardised composting will lower costs and emissions—so the next budget cycle should include an implementation plan.", "correct": true },
+                        { "text": "In conclusion, my essay was about composting.", "correct": false }
+                      ],
+                      "feedback": {
+                        "chosenFeedback": [
+                          "Empty sign-off. Avoid.",
+                          "Correct: a specific closing thought with an actionable implication.",
+                          "Meta-signpost without substance."
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "subContentId": "cv8-roadmap"
+              },
+              "x": 30,
+              "y": 66,
+              "width": 45,
+              "displayType": "button",
+              "pause": true,
+              "label": "Best closing move",
+              "duration": { "from": 251, "to": 280 }
+            },
+
+            {
+              "action": {
+                "library": "H5P.MarkTheWords 1.9",
+                "params": {
+                  "taskDescription": "Mark the <strong>new evidence</strong> that doesn’t belong in a conclusion.",
+                  "textField": "This essay showed why nutrition education matters. <strong>A 2025 WHO study found a 32% drop in sugar intake after new labelling.</strong> Therefore, schools should redesign canteen menus.",
+                  "behaviour": {
+                    "enableRetry": true,
+                    "enableSolutionsButton": true,
+                    "showScorePoints": true
+                  }
+                },
+                "subContentId": "cv9-mark"
+              },
+              "x": 18,
+              "y": 62,
+              "width": 58,
+              "displayType": "button",
+              "pause": true,
+              "label": "Spot the new evidence",
+              "duration": { "from": 281, "to": 305 }
+            },
+
+            {
+              "action": {
+                "library": "H5P.Essay 1.2",
+                "params": {
+                  "taskDescription": "<p><strong>Write one concluding sentence</strong> that circles back to the essay’s introduction (e.g., an opening image) and shows significance.</p><p><em>Example (on Show solution):</em> “The overflowing dorm bins that opened this discussion can become rare—if a single, campus-wide composting policy turns good intentions into daily practice.”</p>",
+                  "inputFieldSize": { "rows": 3 },
+                  "solutionSample": "The overflowing dorm bins that opened this discussion can become rare—if a single, campus-wide composting policy turns good intentions into daily practice.",
+                  "keywords": [],
+                  "behaviour": {
+                    "enableRetry": true,
+                    "showSolutionsRequiresInput": true,
+                    "enableSolutionsButton": true
+                  }
+                },
+                "subContentId": "cv10-essay"
+              },
+              "x": 22,
+              "y": 64,
+              "width": 56,
+              "displayType": "button",
+              "pause": true,
+              "label": "Link back to the intro",
+              "duration": { "from": 306, "to": 340 }
+            }
+          ],
+          "bookmarks": []
+        },
+        "summary": {
+          "task": { "label": "Summary", "showSummary": false }
+        },
+        "behaviour": {
+          "preventSkipping": false,
+          "pause": { "start": true },
+          "requireCompletionBeforeSummary": false
+        },
+        "override": { "showSolutionButton": true, "retryButton": true }
+      },
+      "title": "How to Write a Conclusion — Interactive Checks"
+    };
+
+    // ----------------------------------------------------------
+
+    // Load H5P content
+    const options = {
+      h5pJsonPath: '', 
+      library: 'H5P.InteractiveVideo',
+      jsonContent: h5pContent.interactiveVideo
+    };
+
+    H5P.init(document.getElementById('h5p-container'), options);
+  </script>
+
+</body>
+</html>
