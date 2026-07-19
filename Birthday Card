@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maynard's Birthday Protocol</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandPrimary: '#7CB4CF',
+                        brandSecondary: '#CBE1EC',
+                        brandAccent: '#2C5E77',
+                        brandDark: '#1E333F',
+                        brandLightBg: '#ECF4F8'
+                    },
+                    fontFamily: {
+                        sans: ['Calibri', 'Candara', 'Segoe UI', 'sans-serif'],
+                        serif: ['Calibri', 'Candara', 'Segoe UI', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Force Calibri Across all system UI modules without overriding icon fonts */
+        body, h1, h2, h3, h4, h5, h6, p, span, button, input, select, textarea, blockquote, q, a, label {
+            font-family: 'Calibri', 'Candara', 'Segoe UI', sans-serif !important;
+        }
+        .slide-container {
+            scroll-behavior: smooth;
+        }
+        .text-underline-accent {
+            border-bottom: 3px solid #2C5E77;
+        }
+        /* Custom scrollbar to keep layout premium */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #CBE1EC;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #7CB4CF;
+            border-radius: 4px;
+        }
+        /* Shake Animation for Verification */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+        .animate-shake {
+            animation: shake 0.3s ease-in-out;
+        }
+        /* Pulsing Glow for AI Elements */
+        .ai-glow {
+            box-shadow: 0 0 15px rgba(124, 180, 207, 0.6);
+            border-color: #7CB4CF;
+        }
+        
+        /* Symmetrical clinking animations where both champagne flutes tilt and move together */
+        .glass-left-style {
+            display: inline-block;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-origin: bottom right;
+        }
+        .glass-right-style {
+            display: inline-block;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-origin: bottom left;
+        }
+        .clink-left {
+            transform: translateX(20px) rotate(15deg);
+        }
+        .clink-right {
+            transform: translateX(-20px) rotate(-15deg);
+        }
+        
+        /* Floating animations for sparkling bubbles inside champagne flutes */
+        @keyframes riseBubble {
+            0% { transform: translateY(0) scale(0.8); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-40px) scale(1.2); opacity: 0; }
+        }
+        .champagne-bubble {
+            animation: riseBubble 2s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-[#ECF4F8] text-[#1E333F] font-sans min-h-screen flex flex-col justify-between overflow-x-hidden selection:bg-brandPrimary selection:text-brandDark">
+
+    <!-- TOP NAVIGATION & STATUS BAR -->
+    <header class="w-full py-4 px-6 bg-white/80 backdrop-blur-md border-b border-brandPrimary/30 sticky top-0 z-40 flex justify-between items-center shadow-sm">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-brandPrimary flex items-center justify-center shadow-lg shadow-brandPrimary/20">
+                <i class="fa-solid fa-cake-candles text-brandDark text-lg"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-sm tracking-widest text-brandAccent uppercase">Maynard's birthday</h1>
+                <p class="text-xs text-brandDark/70" id="status-bar">Secure Verification Gateway Loaded</p>
+            </div>
+        </div>
+        <!-- Progress Indicators -->
+        <div class="flex items-center gap-4">
+            <!-- Floating AI Help Badge -->
+            <button onclick="toggleAiDrawer()" class="hidden md:flex items-center gap-2 bg-brandSecondary/40 hover:bg-brandSecondary/80 border border-brandPrimary/60 px-3.5 py-1.5 rounded-full text-xs text-brandAccent font-semibold transition-all">
+                <i class="fa-solid fa-wand-magic-sparkles text-brandAccent animate-pulse"></i>
+                Ask 30s Oracle
+            </button>
+            <div class="flex items-center gap-1.5" id="slide-progress-dots">
+                <!-- Dynamic Dots Generated by JS -->
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN INTERACTIVE SLIDE DECK VIEWPORT -->
+    <main class="flex-grow flex items-center justify-center p-4 md:p-8 max-w-5xl mx-auto w-full">
+        <div class="w-full bg-white/95 border border-brandPrimary/20 rounded-2xl shadow-xl overflow-hidden relative" style="min-height: 550px;">
+            
+            <!-- PROGRESS BAR IN DECK -->
+            <div class="w-full bg-slate-200 h-1.5 relative overflow-hidden">
+                <div id="deck-progress" class="bg-brandAccent h-full w-0 transition-all duration-500 ease-out"></div>
+            </div>
+
+            <!-- SLIDE 1: SECURITY CHECKPOINT -->
+            <div id="slide-1" class="slide-element p-6 md:p-12 flex flex-col justify-between h-full min-h-[500px]">
+                <div class="space-y-6">
+                    <div class="flex items-center gap-2 text-brandAccent uppercase tracking-widest text-xs font-semibold">
+                        <span class="w-2 h-2 rounded-full bg-brandAccent animate-ping"></span>
+                        Decryption Gateway
+                    </div>
+                    <h2 class="text-3xl md:text-5xl font-serif font-bold text-brandDark leading-tight">
+                        Verification Required. Are you <span class="text-brandAccent text-underline-accent">Maynard</span>?
+                    </h2>
+                    <p class="text-slate-600 text-sm md:text-base max-w-xl">
+                        This digital transmission is classified. To prevent unauthorized birthday leaks, we must verify you are indeed the legendary Maynard currently conquering your glorious thirties.
+                    </p>
+                </div>
+
+                <!-- TREASURE HUNT PUZZLE 1 -->
+                <div class="my-6 p-5 rounded-xl bg-brandLightBg/60 border border-brandPrimary/40 space-y-4" id="puzzle-box-1">
+                    <label class="block text-xs uppercase tracking-wider text-brandAccent font-bold">
+                        <i class="fa-solid fa-key mr-2 text-brandAccent"></i>Security Challenge:
+                    </label>
+                    <p class="text-base text-slate-700 font-semibold">
+                        "Who is your best female friend?"
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <input type="text" id="best-friend-input" placeholder="Enter her name..." 
+                               class="bg-white border border-brandPrimary rounded-lg px-4 py-3 text-brandDark focus:outline-none focus:ring-2 focus:ring-brandAccent w-full sm:w-64 text-center font-bold text-lg">
+                        <button onclick="verifyBestFriend()" class="bg-brandAccent text-white hover:bg-brandDark px-6 py-3 rounded-lg font-bold tracking-wider text-sm transition-all flex items-center justify-center gap-2 shadow-sm">
+                            <i class="fa-solid fa-unlock"></i> Decrypt Card
+                        </button>
+                    </div>
+                    <p class="text-xs text-brandAccent italic">
+                        <i class="fa-solid fa-circle-info mr-1"></i> Hint: NOT the French version of her name.
+                    </p>
+                    <p id="error-feedback-1" class="text-red-500 text-xs font-semibold hidden animate-bounce"></p>
+                </div>
+
+                <div class="flex justify-between items-center text-xs text-slate-500">
+                    <span>STATUS: LOCKED 🔒</span>
+                    <span>SLIDE 1 OF 5</span>
+                </div>
+            </div>
+
+            <!-- SLIDE 2: VIDEO ACTIVITY (INTERACTIVE TRIVIA GAME) -->
+            <div id="slide-2" class="slide-element p-6 md:p-12 flex flex-col justify-between h-full min-h-[500px] hidden">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2 text-brandAccent uppercase tracking-widest text-xs font-semibold">
+                        <i class="fa-solid fa-gamepad"></i> Maynard's Level Unlocker
+                    </div>
+                    <h2 class="text-2xl md:text-3xl font-serif font-bold text-brandDark">
+                        The <span class="text-brandAccent text-underline-accent">"Thriving in Your Thirties"</span> Video Activity Challenge
+                    </h2>
+                    <p class="text-slate-600 text-xs md:text-sm">
+                        To unlock your special broadcast and birthday video stream, answer these highly scientific questions about what it truly means to be thriving in your thirties:
+                    </p>
+                </div>
+
+                <!-- GAME INTERACTIVE AREA -->
+                <div id="game-card" class="my-6 p-6 rounded-xl bg-slate-50 border border-brandPrimary/40 min-h-[250px] flex flex-col justify-between transition-all shadow-sm">
+                    <div id="game-question-zone" class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span id="game-step-badge" class="text-xs bg-brandAccent text-white px-3 py-0.5 rounded-full font-bold">Question 1/3</span>
+                            <span id="game-points-badge" class="text-xs text-brandAccent font-mono font-bold">Score: 0</span>
+                        </div>
+                        <h3 id="game-question-text" class="text-base md:text-lg font-bold text-brandDark">Loading trivia...</h3>
+                        
+                        <div id="game-options-zone" class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+                            <!-- Dynamic Option Buttons -->
+                        </div>
+
+                        <!-- FEEDBACK AND CONTROL ZONE -->
+                        <div id="trivia-feedback-panel" class="hidden mt-4 p-4 rounded-xl border flex flex-col sm:flex-row items-center justify-between gap-3 transition-all">
+                            <div class="flex items-center gap-2">
+                                <span id="feedback-icon" class="text-lg"></span>
+                                <p id="feedback-msg" class="text-sm font-semibold"></p>
+                            </div>
+                            <div id="feedback-actions" class="flex gap-2">
+                                <!-- Dynamic control buttons appear here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center">
+                    <button onclick="prevSlide()" class="text-xs text-slate-500 hover:text-brandAccent transition-all"><i class="fa-solid fa-arrow-left mr-1"></i> Prev</button>
+                    <span class="text-xs text-slate-500">SLIDE 2 OF 5</span>
+                    <button onclick="nextSlide()" id="next-to-3" class="text-xs text-slate-400 hover:text-brandAccent transition-all font-bold pointer-events-none opacity-40">Complete Game to Unlock Cake <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                </div>
+            </div>
+
+            <!-- SLIDE 3: IMAGEN AI DREAM CAKE GENERATOR & CANDLE BLOW STATION -->
+            <div id="slide-3" class="slide-element p-6 md:p-12 flex flex-col justify-between h-full min-h-[500px] hidden">
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2 text-brandAccent uppercase tracking-widest text-xs font-semibold">
+                            <i class="fa-solid fa-wand-magic-sparkles text-brandAccent animate-pulse"></i> Dream Cake Laboratory
+                        </div>
+                        <span class="text-[10px] bg-brandSecondary/80 text-brandAccent px-2 py-0.5 rounded-full font-mono font-bold">imagen-4.0-generate-001</span>
+                    </div>
+                    <h2 class="text-2xl md:text-3xl font-serif font-bold text-brandDark">
+                        Bake Your Cake & <span class="text-brandAccent text-underline-accent">Blow the Candle!</span>
+                    </h2>
+                    <p class="text-slate-600 text-xs md:text-sm">
+                        Tell Google's AI what your absolute fantasy birthday cake looks like (e.g., retro console cake, custom sports cake). Once baked, your virtual candle will appear on top for you to blow out!
+                    </p>
+                </div>
+
+                <!-- BAKE STATION UI -->
+                <div class="my-4 p-5 rounded-xl bg-brandLightBg/60 border border-brandPrimary/40 space-y-3">
+                    <div class="flex flex-col sm:flex-row gap-2" id="cake-input-section">
+                        <input type="text" id="ai-cake-prompt" placeholder="e.g. A retro arcade cabinet birthday cake with neon lighting, 8k resolution" 
+                               class="bg-white border border-brandPrimary rounded-lg px-3 py-2 text-slate-800 text-xs focus:outline-none focus:ring-2 focus:ring-brandAccent flex-grow">
+                        <button onclick="bakeAiCake()" id="btn-bake-cake" class="bg-brandAccent text-white hover:bg-brandDark px-4 py-2 rounded-lg text-xs font-bold transition-all shrink-0 flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-cookie-bite animate-pulse"></i> Bake Cake!
+                        </button>
+                    </div>
+
+                    <!-- CAKE DISPLAY PORT WITH CANDLE OVERLAY -->
+                    <div id="ai-cake-container" class="hidden relative aspect-video w-full max-w-md mx-auto rounded-lg overflow-hidden border border-brandPrimary/40 bg-slate-100 flex items-center justify-center mt-3 shadow-inner">
+                        <img id="ai-cake-result" class="w-full h-full object-cover" alt="Generated Birthday Concept" />
+                        
+                        <!-- Dynamic Candle Overlay Placed Directly On Top Of Baked Cake -->
+                        <div id="candle-overlay" class="absolute inset-0 flex flex-col items-center justify-center bg-black/40 hidden">
+                            <!-- Candle Element -->
+                            <div class="relative w-24 h-32 flex flex-col items-center justify-end">
+                                <!-- Candle Flame -->
+                                <div id="candle-flame" class="w-6 h-8 bg-amber-400 rounded-full blur-[1px] animate-pulse absolute top-4 transition-all duration-500 origin-bottom"></div>
+                                <!-- Candle Stick -->
+                                <div class="w-2.5 h-14 bg-gradient-to-t from-red-500 to-amber-300 rounded-t-md z-10 shadow"></div>
+                            </div>
+                        </div>
+
+                        <div id="ai-cake-loader" class="absolute inset-0 bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center gap-2">
+                            <i class="fa-solid fa-spinner animate-spin text-brandAccent text-3xl"></i>
+                            <span class="text-xs text-brandAccent font-semibold">AI is baking your custom cake...</span>
+                        </div>
+                    </div>
+
+                    <!-- Clean, Non-Blocking Instruction Card Placed Outside the Cake Aspect Frame -->
+                    <div id="cake-instruction-box" class="hidden mt-3 p-4 rounded-xl border-2 border-brandAccent bg-white shadow-lg text-center max-w-xs mx-auto transition-all">
+                        <h4 class="font-black text-lg text-brandDark mb-1">Make a wish! 💨</h4>
+                        <p class="text-sm font-bold text-brandAccent mb-2 leading-relaxed">
+                            YOU MUST BLOW OUT THE VIRTUAL CANDLE TO MAKE YOUR WISH & UNLOCK YOUR VIDEO!
+                        </p>
+                        <p class="text-xs text-slate-500 mb-3">Click or tap the flame repeatedly to blow it out.</p>
+                        <button onclick="blowCandle()" id="blow-button" class="bg-brandAccent hover:bg-brandDark text-white text-xs font-bold uppercase py-2 px-4 rounded-lg transition-all w-full shadow-md">
+                            💨 Blow Out Flame
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center">
+                    <button onclick="prevSlide()" class="text-xs text-slate-500 hover:text-brandAccent transition-all"><i class="fa-solid fa-arrow-left mr-1"></i> Prev</button>
+                    <span class="text-xs text-slate-500">SLIDE 3 OF 5</span>
+                    <button onclick="nextSlide()" id="next-to-4" class="text-xs text-slate-400 hover:text-brandAccent transition-all font-bold pointer-events-none opacity-40">Blow out Candle to Unlock Video <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                </div>
+            </div>
+
+            <!-- SLIDE 4: THE VIDEO BROADCAST -->
+            <div id="slide-4" class="slide-element p-6 md:p-12 flex flex-col justify-between h-full min-h-[500px] hidden">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2 text-brandAccent uppercase tracking-widest text-xs font-semibold">
+                        <i class="fa-solid fa-satellite-dish"></i> Live Stream Transmission
+                    </div>
+                    <h2 class="text-2xl md:text-3xl font-serif font-bold text-brandDark">
+                        A Special Message: <span class="text-brandAccent text-underline-accent">Overseas Broadcast</span>
+                    </h2>
+                    <p class="text-slate-600 text-xs md:text-sm">
+                        Physical distance has nothing on solid friendship. To celebrate you, here is a throwback to class, fun, and entertainment. Stream your dedicated birthday tribute:
+                    </p>
+                </div>
+
+                <!-- VIDEO PLAYER MOCK POSTER (BYPASSES ALL IFRAME BLOCKS AND ERROR 153) -->
+                <div class="my-6 aspect-video w-full max-w-2xl mx-auto rounded-xl overflow-hidden border-2 border-brandPrimary bg-slate-950 relative shadow-xl group cursor-pointer" onclick="loadRealBirthdayVideo()" id="video-wrapper">
+                    <!-- High-Fidelity Video Poster Interface -->
+                    <div class="absolute inset-0 bg-gradient-to-br from-brandDark/90 to-brandAccent/80 flex flex-col items-center justify-center transition-all duration-300 z-10 group-hover:from-brandDark group-hover:to-brandAccent">
+                        <!-- Play Button SVG mimicking clean video player -->
+                        <div class="w-20 h-20 rounded-full bg-white text-brandAccent flex items-center justify-center shadow-2xl transform scale-100 group-hover:scale-110 active:scale-95 transition-all duration-300">
+                            <i class="fa-solid fa-play text-3xl ml-1.5 text-brandAccent"></i>
+                        </div>
+                        <div class="text-center p-6 space-y-2 mt-4">
+                            <h4 class="text-white font-bold text-lg tracking-wider">Play Maynard's Birthday Song & Tribute</h4>
+                            <p class="text-xs text-brandSecondary/90 font-medium">Click to stream cleanly in a secure, new browser window</p>
+                            <span class="inline-block mt-2 px-3 py-1 bg-white/20 text-white rounded-full text-[10px] uppercase tracking-wider font-bold"><i class="fa-solid fa-bolt mr-1"></i> Bypasses Iframe Sandbox Blocks</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Fallback & Custom Link Config Panel -->
+                <div class="p-4 rounded-lg bg-brandSecondary/30 border border-brandPrimary/30 flex flex-col gap-3">
+                    <div class="flex flex-col sm:flex-row gap-3 items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-circle-info text-brandAccent text-lg shrink-0"></i>
+                            <p class="text-sm text-slate-700" id="mission-brief-text">
+                                <strong>Mission Brief:</strong> Click the player above to watch the video and unlock your celebration.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center">
+                    <button onclick="prevSlide()" class="text-xs text-slate-500 hover:text-brandAccent transition-all"><i class="fa-solid fa-arrow-left mr-1"></i> Prev</button>
+                    <span class="text-xs text-slate-500">SLIDE 4 OF 5</span>
+                    <button onclick="nextSlide()" id="next-to-5" class="text-xs text-slate-400 hover:text-brandAccent transition-all font-bold pointer-events-none opacity-40">Watch video to unlock persona quotes <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                </div>
+            </div>
+
+            <!-- SLIDE 5: THE ANIMATED HAPPY BIRTHDAY CARD, TRIBUTE, & THE CHAMPAGNE TOAST -->
+            <div id="slide-5" class="slide-element p-6 md:p-12 flex flex-col justify-between h-full min-h-[500px] hidden">
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-2 text-brandAccent uppercase tracking-widest text-xs font-semibold">
+                            <i class="fa-regular fa-envelope-open"></i> Birthday Dossier Unlocked
+                        </div>
+                        <span class="text-xs text-brandAccent bg-brandSecondary/50 px-3 py-1 rounded-full border border-brandPrimary/30 flex items-center gap-1 font-semibold">
+                            <i class="fa-solid fa-sparkles text-brandAccent animate-pulse"></i> Gemini AI Boosted
+                        </span>
+                    </div>
+                    
+                    <!-- Framed Quote mimicking "57 Birthday Wishes For Friends – Happy Birthday Quotes.jpg" -->
+                    <div class="p-6 md:p-8 rounded-xl bg-gradient-to-br from-brandSecondary/20 to-brandPrimary/10 border border-brandPrimary/40 relative overflow-hidden shadow-inner">
+                        <div class="absolute top-0 right-0 p-4 opacity-10">
+                            <i class="fa-solid fa-quote-right text-8xl text-brandAccent"></i>
+                        </div>
+                        <p class="text-xs text-brandAccent font-bold uppercase tracking-widest mb-3">
+                            <i class="fa-solid fa-heart mr-1"></i> Quote Tribute from <span class="italic font-normal">"57 Birthday Wishes For Friends – Happy Birthday Quotes.jpg"</span>
+                        </p>
+                        
+                        <blockquote id="birthday-quote-text" class="font-serif text-xl md:text-2xl italic text-brandDark leading-relaxed max-w-2xl transition-all duration-300">
+                            "A special friend like you deserves all the wonderful blessings not only today but every day! Happy birthday! May all your wishes come true."
+                        </blockquote>
+
+                        <!-- AI Customization Control Bar -->
+                        <div class="mt-4 p-3 bg-white/90 rounded-lg border border-brandPrimary/30 flex flex-wrap items-center justify-between gap-3 shadow-sm">
+                            <span class="text-xs text-slate-600 font-semibold flex items-center gap-1.5">
+                                <i class="fa-solid fa-wand-magic-sparkles text-brandAccent"></i> Adjust Quote Persona:
+                            </span>
+                            <div class="flex flex-wrap gap-1.5">
+                                <button onclick="reStyleQuote('original')" id="btn-persona-original" class="text-xs bg-brandAccent text-white px-2.5 py-1 rounded font-bold transition-all">Original</button>
+                                <button onclick="reStyleQuote('roast')" id="btn-persona-roast" class="text-xs bg-slate-100 hover:bg-brandSecondary text-brandAccent px-2.5 py-1 rounded transition-all">Comedic Roast 💀</button>
+                                <button onclick="reStyleQuote('sage')" id="btn-persona-sage" class="text-xs bg-slate-100 hover:bg-brandSecondary text-brandAccent px-2.5 py-1 rounded transition-all">Old Wise Sage 🧙‍♂️</button>
+                                <button onclick="reStyleQuote('hype')" id="btn-persona-hype" class="text-xs bg-slate-100 hover:bg-brandSecondary text-brandAccent px-2.5 py-1 rounded transition-all">Cyber Hype ⚡</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Symmetrical Champagne Clinking Mechanism -->
+                <div class="my-4 p-4 rounded-xl border border-brandPrimary/30 bg-white shadow-sm flex flex-col items-center gap-4">
+                    <h4 class="text-sm font-bold text-brandAccent uppercase tracking-widest text-center">🥂 Virtual Birthday Cheers!</h4>
+                    <div class="flex gap-16 justify-center items-center h-28 relative px-8">
+                        
+                        <!-- Left Champagne Flute (Custom elegant SVG) -->
+                        <div id="glass-left" class="glass-left-style relative">
+                            <svg class="w-14 h-28" viewBox="0 0 50 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Flute glass outline -->
+                                <path d="M15 10 C15 45, 35 45, 35 10 L35 5 L15 5 Z" stroke="#2C5E77" stroke-width="2" fill="#CBE1EC" fill-opacity="0.3"/>
+                                <!-- Champagne liquid inside -->
+                                <path d="M17 15 C17 38, 33 38, 33 15 Z" fill="#F4D068" opacity="0.8"/>
+                                <!-- Bubbles rising (custom animated circles) -->
+                                <circle class="champagne-bubble" cx="21" cy="30" r="1.5" fill="#FFF" style="animation-delay: 0.2s;"/>
+                                <circle class="champagne-bubble" cx="25" cy="22" r="1" fill="#FFF" style="animation-delay: 0.6s;"/>
+                                <circle class="champagne-bubble" cx="29" cy="26" r="1.2" fill="#FFF" style="animation-delay: 0s;"/>
+                                <!-- Stem -->
+                                <line x1="25" y1="41" x2="25" y2="82" stroke="#2C5E77" stroke-width="2"/>
+                                <!-- Base -->
+                                <ellipse cx="25" cy="82" rx="14" ry="4" stroke="#2C5E77" stroke-width="2" fill="#CBE1EC"/>
+                            </svg>
+                        </div>
+                        
+                        <!-- Right Champagne Flute (Custom elegant SVG) -->
+                        <div id="glass-right" class="glass-right-style relative">
+                            <svg class="w-14 h-28" viewBox="0 0 50 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Flute glass outline -->
+                                <path d="M15 10 C15 45, 35 45, 35 10 L35 5 L15 5 Z" stroke="#2C5E77" stroke-width="2" fill="#CBE1EC" fill-opacity="0.3"/>
+                                <!-- Champagne liquid inside -->
+                                <path d="M17 15 C17 38, 33 38, 33 15 Z" fill="#F4D068" opacity="0.8"/>
+                                <!-- Bubbles rising -->
+                                <circle class="champagne-bubble" cx="22" cy="28" r="1.2" fill="#FFF" style="animation-delay: 0.4s;"/>
+                                <circle class="champagne-bubble" cx="26" cy="20" r="1.5" fill="#FFF" style="animation-delay: 0.1s;"/>
+                                <circle class="champagne-bubble" cx="28" cy="25" r="1" fill="#FFF" style="animation-delay: 0.8s;"/>
+                                <!-- Stem -->
+                                <line x1="25" y1="41" x2="25" y2="82" stroke="#2C5E77" stroke-width="2"/>
+                                <!-- Base -->
+                                <ellipse cx="25" cy="82" rx="14" ry="4" stroke="#2C5E77" stroke-width="2" fill="#CBE1EC"/>
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    <button onclick="clinkGlasses()" class="bg-gradient-to-r from-brandAccent to-brandDark text-white hover:opacity-90 px-6 py-2.5 rounded-xl font-bold tracking-widest text-xs shadow-md hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
+                        🥂 Clink Glasses & Shoot Confetti!
+                    </button>
+
+                    <!-- Dynamic Post-Clink Birthday Love Message -->
+                    <div id="clink-love-message" class="hidden mt-2 text-center text-sm font-bold text-brandAccent p-3.5 bg-brandSecondary/30 border-2 border-brandPrimary/40 rounded-xl transition-all duration-500 animate-pulse max-w-md">
+                        May, kyk hoe ver het jy gekom hierdie laaste jaar! Ek wens jou net die beste van alles toe vir die volgende een! Hoop jy het 'n wonderlike verjaarsdag!
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center pt-2">
+                    <button onclick="prevSlide()" class="text-xs text-slate-500 hover:text-brandAccent transition-all"><i class="fa-solid fa-arrow-left mr-1"></i> Prev</button>
+                    <span class="text-xs text-slate-500">SLIDE 5 OF 5</span>
+                    <button onclick="triggerResetModal()" class="text-xs text-red-500 hover:text-red-700 transition-all font-bold">Restart birthday card <i class="fa-solid fa-rotate-right ml-1"></i></button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- FLOATING AI COMPANION DRAWER -->
+    <div id="ai-drawer" class="fixed top-0 right-0 h-full w-full sm:w-96 bg-white border-l border-brandPrimary/30 shadow-2xl z-50 transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
+        <!-- Drawer Header -->
+        <div class="p-4 border-b border-brandPrimary/30 flex items-center justify-between bg-slate-50">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-full bg-brandSecondary flex items-center justify-center">
+                    <i class="fa-solid fa-brain text-brandAccent"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-sm text-brandAccent">The 30s Oracle</h3>
+                    <p class="text-[10px] text-slate-500 font-medium">Powered by Gemini 3.1 Flash</p>
+                </div>
+            </div>
+            <button onclick="toggleAiDrawer()" class="text-slate-400 hover:text-brandAccent transition-all p-1">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+
+        <!-- Chat History -->
+        <div id="ai-chat-history" class="flex-grow p-4 overflow-y-auto space-y-4">
+            <div class="bg-brandLightBg border border-brandPrimary/30 p-3 rounded-xl text-xs space-y-1 shadow-sm">
+                <p class="text-brandAccent font-bold flex items-center gap-1">
+                    <i class="fa-solid fa-comment-dots"></i> Oracle:
+                </p>
+                <p class="text-slate-700 leading-relaxed">
+                    Greetings, Maynard! Ask me anything about navigating this spectacular decade of your thirties—whether it is joint aches, optimal bedtimes, or overseas survival tips. I am at your service!
+                </p>
+            </div>
+            <!-- Dynamic Messages -->
+        </div>
+
+        <!-- Predefined Quick Queries -->
+        <div class="p-3 bg-slate-50 border-t border-brandPrimary/20 flex flex-wrap gap-1.5 justify-center">
+            <button onclick="sendQuickAiQuery('Why did my back make a pop sound when I got up?')" class="text-[10px] bg-white hover:bg-brandSecondary text-brandAccent px-2.5 py-1 rounded-full border border-brandPrimary/30 shadow-sm transition-all">⚡ Joint Pop Reason</button>
+            <button onclick="sendQuickAiQuery('Draft an excuse to skip a party tonight for sleeping at 9pm.')" class="text-[10px] bg-white hover:bg-brandSecondary text-brandAccent px-2.5 py-1 rounded-full border border-brandPrimary/30 shadow-sm transition-all">🛏️ Sleep Excuse</button>
+            <button onclick="sendQuickAiQuery('Provide a motivational quote for being in your thirties and thriving.')" class="text-[10px] bg-white hover:bg-brandSecondary text-brandAccent px-2.5 py-1 rounded-full border border-brandPrimary/30 shadow-sm transition-all">🌟 Thriving Motivation</button>
+        </div>
+
+        <!-- Chat Input Form -->
+        <div class="p-4 border-t border-brandPrimary/30 bg-white flex gap-2">
+            <input type="text" id="ai-chat-input" placeholder="Ask anything about life..." 
+                   class="bg-slate-50 border border-brandPrimary rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-brandAccent flex-grow shadow-sm"
+                   onkeydown="if(event.key === 'Enter') sendCustomAiQuery()">
+            <button onclick="sendCustomAiQuery()" class="bg-brandAccent hover:bg-brandDark text-white p-2.5 rounded-lg transition-all flex items-center justify-center shrink-0 shadow-sm">
+                <i class="fa-solid fa-paper-plane text-xs"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Floating Chat Toggle for Mobile Devices -->
+    <button onclick="toggleAiDrawer()" class="fixed bottom-20 right-4 bg-brandAccent text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg ai-glow md:hidden z-35 hover:scale-110 active:scale-95 transition-all">
+        <i class="fa-solid fa-wand-magic-sparkles text-lg"></i>
+    </button>
+
+    <!-- FOOTER CONTROLS AND TOUCH OPTIONS -->
+    <footer class="w-full bg-white py-4 px-6 border-t border-brandPrimary/20 flex flex-col sm:flex-row justify-between items-center gap-4 z-30 shadow-md">
+        <div class="text-xs text-slate-600 flex items-center gap-2">
+            <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Progress Saved Locally </span>
+            <span class="text-brandAccent font-semibold ml-1">Maynard Protocol Live (30s Vintage)</span>
+        </div>
+        
+        <!-- Navigation Panel -->
+        <div class="flex items-center gap-4">
+            <button onclick="prevSlide()" class="bg-slate-50 border border-brandPrimary hover:bg-brandSecondary text-brandAccent px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 shadow-sm">
+                <i class="fa-solid fa-angle-left"></i> Back
+            </button>
+            <span class="text-xs text-slate-600 font-mono font-bold" id="footer-slide-counter">1 / 5</span>
+            <button onclick="nextSlide()" id="footer-next-btn" class="bg-slate-50 border border-brandPrimary hover:bg-brandSecondary text-brandAccent px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 shadow-sm">
+                Next <i class="fa-solid fa-angle-right"></i>
+            </button>
+        </div>
+    </footer>
+
+    <!-- CUSTOM DIALOG MODALS -->
+    <div id="custom-dialog-overlay" class="fixed inset-0 bg-brandDark/40 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-white border-2 border-brandPrimary rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4">
+            <div class="flex items-center gap-3" id="dialog-header-zone">
+                <div class="w-10 h-10 rounded-full bg-brandSecondary flex items-center justify-center shrink-0">
+                    <i id="dialog-icon" class="fa-solid fa-bell text-brandAccent text-lg"></i>
+                </div>
+                <h4 id="dialog-title" class="font-bold text-brandDark text-base">Alert</h4>
+            </div>
+            <p id="dialog-message" class="text-sm text-slate-600 leading-relaxed">Message goes here.</p>
+            <div class="flex justify-end gap-2 pt-2" id="dialog-buttons-zone">
+                <button onclick="closeDialog()" class="px-4 py-2 rounded-lg bg-brandAccent text-white text-xs font-bold hover:bg-brandDark transition-all shadow-sm">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT STATE CONTROLLER -->
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 5;
+        
+        // Progress State (saved in localStorage)
+        let state = {
+            maxUnlockedSlide: 1,
+            puzzle1Solved: false,      // Unlocks Slide 2 (Trivia)
+            triviaFinished: false,     // Unlocks Slide 3 (Bake Cake & Blow Candle)
+            triviaScore: 0,
+            cakeBaked: false,          
+            candleExtinguished: false, // Unlocks Slide 4 (Video)
+            videoViewed: false,        // Unlocks Slide 5 (Card & Cheers Toast)
+            activeQuoteStyle: 'original',
+            lastQuoteText: '',
+            customVideoUrl: ''         // Saved custom video URL
+        };
+
+        // Static quotes
+        const originalQuote = "A special friend like you deserves all the wonderful blessings not only today but every day! Happy birthday! May all your wishes come true.";
+
+        // --- CUSTOM MODAL UTILITIES (Replacing native Alert & Confirm) ---
+        let onConfirmCallback = null;
+
+        function showCustomAlert(message, title = "System Notification", iconClass = "fa-triangle-exclamation") {
+            document.getElementById('dialog-title').innerText = title;
+            document.getElementById('dialog-message').innerText = message;
+            
+            const iconEl = document.getElementById('dialog-icon');
+            iconEl.className = `fa-solid ${iconClass} text-brandAccent text-lg`;
+            
+            const btnZone = document.getElementById('dialog-buttons-zone');
+            btnZone.innerHTML = `
+                <button onclick="closeDialog()" class="px-4 py-2 rounded-lg bg-brandAccent text-white text-xs font-bold hover:bg-brandDark transition-all shadow-sm">OK</button>
+            `;
+            
+            document.getElementById('custom-dialog-overlay').classList.remove('hidden');
+        }
+
+        function showCustomConfirm(message, title = "Confirmation Required", onConfirm, iconClass = "fa-circle-question") {
+            document.getElementById('dialog-title').innerText = title;
+            document.getElementById('dialog-message').innerText = message;
+            
+            const iconEl = document.getElementById('dialog-icon');
+            iconEl.className = `fa-solid ${iconClass} text-brandAccent text-lg`;
+            
+            onConfirmCallback = onConfirm;
+            
+            const btnZone = document.getElementById('dialog-buttons-zone');
+            btnZone.innerHTML = `
+                <button onclick="closeDialog()" class="px-3.5 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-all">Cancel</button>
+                <button onclick="executeConfirmCallback()" class="px-4 py-2 rounded-lg bg-brandAccent text-white text-xs font-bold hover:bg-brandDark transition-all shadow-sm">Confirm</button>
+            `;
+            
+            document.getElementById('custom-dialog-overlay').classList.remove('hidden');
+        }
+
+        function closeDialog() {
+            document.getElementById('custom-dialog-overlay').classList.add('hidden');
+            onConfirmCallback = null;
+        }
+
+        function executeConfirmCallback() {
+            if (onConfirmCallback) {
+                onConfirmCallback();
+            }
+            closeDialog();
+        }
+
+        function triggerResetModal() {
+            showCustomConfirm(
+                "Would you like to restart your birthday journey and decrypt the gates again?",
+                "Restart Progress?",
+                () => {
+                    localStorage.removeItem('maynard_birthday_state');
+                    state = {
+                        maxUnlockedSlide: 1,
+                        puzzle1Solved: false,
+                        triviaFinished: false,
+                        triviaScore: 0,
+                        cakeBaked: false,
+                        candleExtinguished: false,
+                        videoViewed: false,
+                        activeQuoteStyle: 'original',
+                        lastQuoteText: ''
+                    };
+                    location.reload();
+                },
+                "fa-arrow-rotate-left"
+            );
+        }
+
+        async function fetchWithRetry(url, options, retries = 2, delay = 800) {
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (response.ok) return response;
+                    if (response.status === 429) {
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        delay *= 2;
+                        continue;
+                    }
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                } catch (error) {
+                    if (i === retries - 1) throw error;
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    delay *= 2;
+                }
+            }
+        }
+
+        async function callGeminiTextAPI(userPrompt, systemPrompt = "") {
+            const apiKey = ""; // Platform key injected at runtime
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+            const payload = { contents: [{ parts: [{ text: userPrompt }] }] };
+            if (systemPrompt) {
+                payload.systemInstruction = { parts: [{ text: systemPrompt }] };
+            }
+
+            try {
+                const response = await fetchWithRetry(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                return result.candidates?.[0]?.content?.parts?.[0]?.text || generateLocalMockResponse(userPrompt);
+            } catch (err) {
+                console.warn("Gemini Text API failure, activating local simulator:", err);
+                return generateLocalMockResponse(userPrompt);
+            }
+        }
+
+        function generateLocalMockResponse(prompt) {
+            const lower = prompt.toLowerCase();
+            if (lower.includes('roast')) {
+                return "Happy Birthday, Maynard! You have officially cruised into the peak of your thirties, where sleeping by 9:30 PM counts as an adrenaline-fueled wild night out, and joint noises are basically your body applauding your daily survival!";
+            } else if (lower.includes('sage')) {
+                return "Within your thirties, the noise of the world settles, Maynard. Savor the peacefulness of your evening teas and precise posture alignments. May the tranquility of your thirties blossom beautifully.";
+            } else if (lower.includes('hype')) {
+                return "CORE CRITICAL OVERLAY STATUS ACTIVE! Maynard Thirties Core has achieved full system security levels. Prepare for ultimate celebratory feedback cycles! Stay legendary, absolute champion!";
+            } else if (lower.includes('pop') || lower.includes('back')) {
+                return "That spine pop is simply your internal chassis confirming it has logged another magnificent decade. Keep your head high, Maynard!";
+            } else if (lower.includes('sleep') || lower.includes('excuse')) {
+                return "Inform them that you have a high-priority international briefing scheduled with your comfortable ergonomic mattress at exactly 8:45 PM.";
+            } else if (lower.includes('quote') || lower.includes('motivation')) {
+                return "Your thirties are the spectacular golden era of life: you are young enough to make big plays, but wise enough to decline messy morning hangovers. Keep winning!";
+            }
+            return "The Thirties Oracle has finalized telemetry calibrations. Enjoy your incredible thirties, Maynard!";
+        }
+
+        async function callImagenAPI(imagePrompt) {
+            const apiKey = ""; // Platform key injected at runtime
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`;
+            
+            const payload = {
+                instances: { prompt: imagePrompt },
+                parameters: { "sampleCount": 1 }
+            };
+
+            try {
+                const response = await fetchWithRetry(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                const base64Bytes = result.predictions?.[0]?.bytesBase64Encoded;
+                if (!base64Bytes) throw new Error("Missing predictions in response");
+                return `data:image/png;base64,${base64Bytes}`;
+            } catch (err) {
+                console.warn("Imagen API failed, trying secondary model fallback...", err);
+                try {
+                    return await callFlashImageAPI(imagePrompt, apiKey);
+                } catch (fallbackErr) {
+                    console.warn("Flash image fallback failed, returning custom vector SVG art...", fallbackErr);
+                    return generateLocalMockImage(imagePrompt);
+                }
+            }
+        }
+
+        async function callFlashImageAPI(imagePrompt, apiKey) {
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image-preview:generateContent?key=${apiKey}`;
+            const payload = {
+                contents: [{
+                    parts: [{ text: imagePrompt }]
+                }],
+                generationConfig: {
+                    responseModalities: ['IMAGE']
+                }
+            };
+            const response = await fetchWithRetry(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (!response.ok) throw new Error("Failed to post flash image query");
+            const result = await response.json();
+            const base64Data = result?.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
+            if (!base64Data) throw new Error("No inlineData in flash response");
+            return `data:image/png;base64,${base64Data}`;
+        }
+
+        function generateLocalMockImage(prompt) {
+            const svgStr = `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 300" width="100%" height="100%">
+                <rect width="100%" height="100%" fill="#7CB4CF" rx="15"/>
+                <circle cx="250" cy="150" r="80" fill="#CBE1EC"/>
+                <rect x="220" y="110" width="60" height="80" fill="#2C5E77" rx="5"/>
+                <circle cx="250" cy="90" r="15" fill="#F4D068"/>
+                <text x="250" y="220" font-family="'Calibri', sans-serif" font-size="14" fill="#1E333F" font-weight="bold" text-anchor="middle">Maynard's Custom Cake Ready</text>
+                <text x="250" y="240" font-family="'Calibri', sans-serif" font-size="10" fill="#1E333F" text-anchor="middle">${prompt}</text>
+            </svg>
+            `;
+            return "data:image/svg+xml;utf8," + encodeURIComponent(svgStr);
+        }
+
+        function loadRealBirthdayVideo() {
+            // Get the configured video URL (default to the specified YouTube link)
+            const videoUrl = state.customVideoUrl || "https://www.youtube.com/watch?v=OzInzgwbsgs";
+
+            // Open the video link instantly in a safe, new tab/window to bypass CORS/iframe Error 153 blocks
+            window.open(videoUrl, '_blank');
+
+            // Instantly unlock Slide 5 inside the main protocol viewport
+            state.videoViewed = true;
+            if (state.maxUnlockedSlide < 5) {
+                state.maxUnlockedSlide = 5;
+            }
+            saveState();
+
+            // Trigger visual feedback confetti
+            confetti({
+                particleCount: 80,
+                spread: 60,
+                origin: { y: 0.8 }
+            });
+
+            // Update the slide UI instructions
+            const briefText = document.getElementById('mission-brief-text');
+            if (briefText) {
+                briefText.innerHTML = `<strong>Mission Brief:</strong> Video launched in a new window! <span class="text-emerald-600 font-semibold ml-1"><i class="fa-solid fa-circle-check"></i> Unlocked!</span>`;
+            }
+
+            const nextBtn = document.getElementById('next-to-5');
+            if (nextBtn) {
+                nextBtn.classList.remove('pointer-events-none', 'opacity-40');
+                nextBtn.classList.add('text-brandAccent');
+            }
+
+            showCustomAlert("The video was opened in a new tab to bypass system security restrictions. The final slide has been unlocked!", "Video Stream Opened 🚀", "fa-circle-check");
+        }
+
+        // Dynamically apply custom video link inputted by the user
+        function applyCustomVideoLink() {
+            const inputVal = document.getElementById('custom-video-url-input').value.trim();
+            if (!inputVal) {
+                showCustomAlert("Please enter a valid video link before applying.", "Invalid Link", "fa-link");
+                return;
+            }
+            state.customVideoUrl = inputVal;
+            saveState();
+            
+            showCustomAlert("Your custom video link has been applied successfully! Tap the play card to launch it.", "Video Updated", "fa-circle-check");
+        }
+
+        function showSlide(index) {
+            document.querySelectorAll('.slide-element').forEach(el => el.classList.add('hidden'));
+            
+            const activeSlide = document.getElementById(`slide-${index}`);
+            if (activeSlide) {
+                activeSlide.classList.remove('hidden');
+                currentSlide = index;
+                // Force scroll container to top on slide change
+                const container = activeSlide.parentElement;
+                container.scrollTop = 0;
+            }
+
+            const progressPercent = ((index - 1) / (totalSlides - 1)) * 100;
+            document.getElementById('deck-progress').style.width = `${progressPercent}%`;
+
+            document.getElementById('footer-slide-counter').innerText = `${index} / ${totalSlides}`;
+            
+            const nextBtn = document.getElementById('footer-next-btn');
+            if (currentSlide === totalSlides) {
+                nextBtn.classList.add('opacity-30', 'pointer-events-none');
+            } else {
+                nextBtn.classList.remove('opacity-30', 'pointer-events-none');
+            }
+
+            updateDots();
+            saveState();
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides) {
+                if (currentSlide + 1 <= state.maxUnlockedSlide) {
+                    showSlide(currentSlide + 1);
+                } else {
+                    triggerSlideWarning();
+                }
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 1) {
+                showSlide(currentSlide - 1);
+            }
+        }
+
+        function triggerSlideWarning() {
+            document.getElementById('status-bar').innerText = "⚠️ Unlock Current Task to Advance!";
+            document.getElementById('status-bar').className = "text-xs font-semibold text-amber-600";
+            setTimeout(() => {
+                document.getElementById('status-bar').innerText = "Security System Verified";
+                document.getElementById('status-bar').className = "text-xs text-slate-500";
+            }, 3000);
+            
+            const activeContainer = document.getElementById(`slide-${currentSlide}`);
+            activeContainer.classList.add('animate-shake');
+            setTimeout(() => activeContainer.classList.remove('animate-shake'), 1000);
+        }
+
+        function updateDots() {
+            const container = document.getElementById('slide-progress-dots');
+            container.innerHTML = '';
+            for (let i = 1; i <= totalSlides; i++) {
+                const dot = document.createElement('div');
+                dot.className = `w-2 h-2 rounded-full transition-all duration-300 ${
+                    i === currentSlide ? 'bg-brandAccent scale-125 w-4' : i < currentSlide ? 'bg-brandPrimary' : 'bg-slate-300'
+                }`;
+                container.appendChild(dot);
+            }
+        }
+
+        function verifyBestFriend() {
+            const inputVal = document.getElementById('best-friend-input').value.trim();
+            const errorText = document.getElementById('error-feedback-1');
+            
+            if (!inputVal) {
+                errorText.innerText = "Please enter your best female friend's name to verify.";
+                errorText.classList.remove('hidden');
+                return;
+            }
+
+            // Correct answer validation is case-insensitive for "Leonore"
+            if (inputVal.toLowerCase() === 'leonore') {
+                errorText.classList.add('hidden');
+                state.puzzle1Solved = true;
+                if (state.maxUnlockedSlide < 2) {
+                    state.maxUnlockedSlide = 2;
+                }
+                saveState();
+                
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: ['#7CB4CF', '#CBE1EC', '#2C5E77']
+                });
+
+                document.getElementById('puzzle-box-1').innerHTML = `
+                    <div class="text-center py-4 text-emerald-600 font-semibold flex flex-col items-center gap-2">
+                        <i class="fa-solid fa-circle-check text-4xl text-brandAccent animate-pulse"></i>
+                        <span>Identity Decrypted. Welcome Maynard! Proceeding...</span>
+                    </div>
+                `;
+                
+                setTimeout(() => {
+                    showSlide(2);
+                }, 1500);
+
+            } else {
+                errorText.innerText = "Security mismatch. Think of your closest female companion! Watch spelling.";
+                errorText.classList.remove('hidden');
+            }
+        }
+
+        // Comedy Questions customized for 30s where correct answer is highly obvious and hilarious.
+        const triviaData = [
+            {
+                q: "What is your body's brand-new spontaneous superpower now that you are in your thirties?",
+                o: [
+                    "Making a loud, unexplained clicking noise from your knee just by standing up.", 
+                    "Sprinting up Mount Everest backward while eating hot chili peppers.", 
+                    "Learning fluent Mandarin in under 12 seconds with sheer brain waves.", 
+                    "Developing infrared night vision to scan for lost TV remotes."
+                ],
+                correct: 0,
+                hint: "Think about joint sounds!"
+            },
+            {
+                q: "What is universally considered the absolute wildest Friday night plan for someone thriving in their thirties?",
+                o: [
+                    "Renting a private space shuttle to party on Mars with dynamic DJs.", 
+                    "Staying home, putting on pristine orthopedic socks, and falling asleep by 9:30 PM.", 
+                    "Diving into a volcanic crater just to retrieve a lost shiny penny.", 
+                    "Entering an underground high-stakes drift racing championship in neon alleyways."
+                ],
+                correct: 1,
+                hint: "Glorious, uninterrupted early sleep!"
+            },
+            {
+                q: "If you are living overseas, what is the single most valuable treasure your friends can build for you?",
+                o: [
+                    "A customized, interactive digital protocol website loaded with love and cheers!", 
+                    "A life-sized monument made entirely of solid imported bubblegum.", 
+                    "A personal carrier pigeon trained to fly in first-class passenger cabins.", 
+                    "A golden suitcase filled with air collected from the Swiss Alps."
+                ],
+                correct: 0,
+                hint: "Look directly at your current screen!"
+            }
+        ];
+
+        let currentQuestionIdx = 0;
+        let score = 0;
+        let firstTryOnQuestion = true;
+        let disabledOptions = []; // Track already guessed incorrect index list for current question
+
+        function loadTriviaQuestion() {
+            if (state.triviaFinished) {
+                renderTriviaResult();
+                return;
+            }
+
+            const qData = triviaData[currentQuestionIdx];
+            document.getElementById('game-step-badge').innerText = `Challenge ${currentQuestionIdx + 1}/${triviaData.length}`;
+            document.getElementById('game-points-badge').innerText = `Score: ${score}/${triviaData.length}`;
+            document.getElementById('game-question-text').innerText = qData.q;
+            
+            // Hide feedback panel
+            const fbPanel = document.getElementById('trivia-feedback-panel');
+            fbPanel.classList.add('hidden');
+
+            const optionsZone = document.getElementById('game-options-zone');
+            optionsZone.innerHTML = '';
+
+            disabledOptions = [];
+            firstTryOnQuestion = true;
+
+            renderOptions();
+        }
+
+        function renderOptions() {
+            const qData = triviaData[currentQuestionIdx];
+            const optionsZone = document.getElementById('game-options-zone');
+            optionsZone.innerHTML = '';
+
+            qData.o.forEach((opt, idx) => {
+                const isGuessedWrong = disabledOptions.includes(idx);
+                const button = document.createElement('button');
+                
+                // Base styling
+                let btnStyles = "w-full text-left p-4 rounded-xl border text-sm transition-all focus:outline-none flex items-start gap-3 shadow-sm ";
+                
+                if (isGuessedWrong) {
+                    btnStyles += "bg-red-50 border-red-300 text-red-500 opacity-60 pointer-events-none cursor-not-allowed";
+                } else {
+                    btnStyles += "border-brandPrimary/40 bg-white hover:bg-brandSecondary/20 hover:border-brandAccent";
+                }
+
+                button.className = btnStyles;
+                button.innerHTML = `
+                    <span class="w-6 h-6 rounded-full bg-slate-100 border border-brandPrimary/40 flex items-center justify-center text-xs font-bold text-brandAccent shrink-0">${String.fromCharCode(65 + idx)}</span>
+                    <span class="text-slate-700">${opt}</span>
+                `;
+                
+                if (!isGuessedWrong) {
+                    button.onclick = () => submitAnswer(idx);
+                }
+                optionsZone.appendChild(button);
+            });
+        }
+
+        function submitAnswer(selectedIdx) {
+            const qData = triviaData[currentQuestionIdx];
+            const optionsZone = document.getElementById('game-options-zone');
+            const fbPanel = document.getElementById('trivia-feedback-panel');
+            const fbIcon = document.getElementById('feedback-icon');
+            const fbMsg = document.getElementById('feedback-msg');
+            const fbActions = document.getElementById('feedback-actions');
+
+            // Lock all option buttons temporarily
+            Array.from(optionsZone.children).forEach(btn => btn.onclick = null);
+
+            if (selectedIdx === qData.correct) {
+                // Correct path
+                if (firstTryOnQuestion) {
+                    score++;
+                }
+
+                confetti({
+                    particleCount: 40,
+                    spread: 45,
+                    origin: { y: 0.8 }
+                });
+
+                // Style correct option green
+                optionsZone.children[selectedIdx].className = "w-full text-left p-4 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-800 text-sm transition-all flex items-start gap-3 shadow-inner pointer-events-none";
+
+                fbPanel.className = "mt-4 p-4 rounded-xl border border-emerald-300 bg-emerald-50 text-emerald-800 flex flex-col sm:flex-row items-center justify-between gap-3 transition-all";
+                fbIcon.innerHTML = `<i class="fa-solid fa-circle-check text-xl text-emerald-600 animate-bounce"></i>`;
+                fbMsg.innerText = "Spot on! That is exactly correct. 🎉";
+                
+                const isLast = (currentQuestionIdx === triviaData.length - 1);
+                fbActions.innerHTML = `
+                    <button onclick="advanceTrivia()" class="px-5 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 text-xs font-bold transition-all shadow-md flex items-center gap-1">
+                        ${isLast ? 'Complete Verification' : 'Next Question'} <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                `;
+                fbPanel.classList.remove('hidden');
+
+            } else {
+                // Wrong path
+                firstTryOnQuestion = false;
+                disabledOptions.push(selectedIdx);
+
+                // Style selected option red
+                optionsZone.children[selectedIdx].className = "w-full text-left p-4 rounded-xl border-2 border-red-500 bg-red-50 text-red-800 text-sm transition-all flex items-start gap-3 shadow-inner pointer-events-none";
+
+                fbPanel.className = "mt-4 p-4 rounded-xl border border-rose-300 bg-rose-50 text-rose-800 flex flex-col sm:flex-row items-center justify-between gap-3 transition-all";
+                fbIcon.innerHTML = `<i class="fa-solid fa-circle-xmark text-xl text-rose-600"></i>`;
+                fbMsg.innerText = "Ah, that is not correct. Try again, or reveal the answer!";
+
+                fbActions.innerHTML = `
+                    <button onclick="tryAgainTrivia()" class="px-4 py-2 rounded-lg bg-rose-600 text-white hover:bg-rose-700 text-xs font-bold transition-all shadow-md flex items-center gap-1">
+                        <i class="fa-solid fa-rotate-left"></i> Try Again
+                    </button>
+                    <button onclick="revealTriviaCorrectAnswer()" class="px-4 py-2 rounded-lg bg-brandAccent text-white hover:bg-brandDark text-xs font-bold transition-all shadow-md">
+                        💡 Show Answer
+                    </button>
+                `;
+                fbPanel.classList.remove('hidden');
+            }
+        }
+
+        function tryAgainTrivia() {
+            const fbPanel = document.getElementById('trivia-feedback-panel');
+            fbPanel.classList.add('hidden');
+            renderOptions();
+        }
+
+        function revealTriviaCorrectAnswer() {
+            const qData = triviaData[currentQuestionIdx];
+            const optionsZone = document.getElementById('game-options-zone');
+            const fbPanel = document.getElementById('trivia-feedback-panel');
+            const fbIcon = document.getElementById('feedback-icon');
+            const fbMsg = document.getElementById('feedback-msg');
+            const fbActions = document.getElementById('feedback-actions');
+
+            // Highlight the correct option in green and dim others
+            Array.from(optionsZone.children).forEach((btn, idx) => {
+                btn.onclick = null;
+                if (idx === qData.correct) {
+                    btn.className = "w-full text-left p-4 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-800 text-sm transition-all flex items-start gap-3 shadow-inner pointer-events-none";
+                } else {
+                    btn.className = "w-full text-left p-4 rounded-xl border border-slate-200 bg-slate-50 text-slate-400 text-sm transition-all flex items-start gap-3 opacity-50 pointer-events-none";
+                }
+            });
+
+            fbPanel.className = "mt-4 p-4 rounded-xl border border-brandPrimary/40 bg-slate-50 text-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 transition-all";
+            fbIcon.innerHTML = `<i class="fa-solid fa-circle-info text-xl text-brandAccent"></i>`;
+            fbMsg.innerText = `The correct answer is: Option ${String.fromCharCode(65 + qData.correct)}`;
+
+            const isLast = (currentQuestionIdx === triviaData.length - 1);
+            fbActions.innerHTML = `
+                <button onclick="advanceTrivia()" class="px-5 py-2 rounded-lg bg-brandAccent text-white hover:bg-brandDark text-xs font-bold transition-all shadow-md flex items-center gap-1">
+                    ${isLast ? 'Complete Verification' : 'Next Question'} <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            `;
+            fbPanel.classList.remove('hidden');
+        }
+
+        function advanceTrivia() {
+            currentQuestionIdx++;
+            if (currentQuestionIdx < triviaData.length) {
+                loadTriviaQuestion();
+            } else {
+                state.triviaFinished = true;
+                state.triviaScore = score;
+                if (state.maxUnlockedSlide < 3) {
+                    state.maxUnlockedSlide = 3;
+                }
+                saveState();
+                renderTriviaResult();
+                
+                const nextBtn = document.getElementById('next-to-3');
+                nextBtn.classList.remove('pointer-events-none', 'opacity-40');
+                nextBtn.classList.add('text-brandAccent');
+            }
+        }
+
+        function renderTriviaResult() {
+            const zone = document.getElementById('game-card');
+            zone.innerHTML = `
+                <div class="text-center py-6 space-y-4">
+                    <div class="w-16 h-16 rounded-full bg-brandSecondary/60 flex items-center justify-center mx-auto border border-brandPrimary/40">
+                        <i class="fa-solid fa-graduation-cap text-3xl text-brandAccent animate-bounce"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-800">Verification Challenge Cleared!</h3>
+                        <p class="text-xs text-brandAccent font-bold mt-1">Status: Fully Verified Thirties Legend</p>
+                    </div>
+                    <div class="inline-block px-4 py-2 bg-brandSecondary/20 rounded-lg border border-brandPrimary/30 text-sm font-semibold text-brandAccent">
+                        Verification Final Score: ${state.triviaScore || score} / 3 Correct On First Try
+                    </div>
+                    <p class="text-xs text-slate-500 max-w-md mx-auto">
+                        Your verification score is complete. Navigate to Slide 3 to bake your ultimate birthday dream cake and blow out your candle!
+                    </p>
+                    <button onclick="showSlide(3)" class="mt-4 bg-brandAccent hover:bg-brandDark text-white font-bold py-2 px-6 rounded-lg text-sm transition-all shadow-md">
+                        Proceed to Dream Cake Generator <i class="fa-solid fa-chevron-right ml-1"></i>
+                    </button>
+                </div>
+            `;
+        }
+
+        let blowCount = 0;
+        function blowCandle() {
+            blowCount++;
+            const flame = document.getElementById('candle-flame');
+            
+            if (blowCount < 4) {
+                flame.style.transform = `scale(${1 - (blowCount * 0.25)}) skewX(${blowCount * 12}deg)`;
+            } else {
+                flame.classList.add('opacity-0', 'scale-0');
+                state.candleExtinguished = true;
+                
+                if (state.maxUnlockedSlide < 4) {
+                    state.maxUnlockedSlide = 4;
+                }
+                saveState();
+                
+                confetti({
+                    particleCount: 150,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 }
+                });
+                confetti({
+                    particleCount: 150,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 }
+                });
+
+                const btn = document.getElementById('blow-button');
+                btn.innerText = "✨ Wish Sent! Slide Unlocked.";
+                btn.disabled = true;
+                btn.className = "bg-emerald-50 text-emerald-600 border border-emerald-300 py-1.5 px-3 rounded-lg text-[10px] font-bold transition-all w-full shadow-sm";
+                
+                const nextBtn = document.getElementById('next-to-4');
+                if (nextBtn) {
+                    nextBtn.classList.remove('pointer-events-none', 'opacity-40');
+                    nextBtn.classList.add('text-brandAccent');
+                }
+                
+                showCustomAlert("You blew out the candle! The birthday video stream is now unlocked on the next slide.", "Wish Transmitted!", "fa-wand-magic-sparkles");
+            }
+        }
+
+        // AI Cake Generator & Candle Assembly (Slide 3)
+        async function bakeAiCake() {
+            const promptInput = document.getElementById('ai-cake-prompt');
+            const promptValue = promptInput.value.trim();
+            if (!promptValue) return;
+
+            const container = document.getElementById('ai-cake-container');
+            const resultImg = document.getElementById('ai-cake-result');
+            const loader = document.getElementById('ai-cake-loader');
+            const bakeBtn = document.getElementById('btn-bake-cake');
+            const candleOverlay = document.getElementById('candle-overlay');
+            const instructionBox = document.getElementById('cake-instruction-box');
+
+            container.classList.remove('hidden');
+            loader.classList.remove('hidden');
+            candleOverlay.classList.add('hidden');
+            if (instructionBox) instructionBox.classList.add('hidden');
+            bakeBtn.disabled = true;
+            bakeBtn.classList.add('opacity-50', 'pointer-events-none');
+
+            try {
+                const finalPrompt = `A premium close-up digital photograph of a marvelous, highly creative birthday cake styled for Maynard. Subject: ${promptValue}. Highly detailed, delicious icing textures, festive lighting.`;
+                const imageUrl = await callImagenAPI(finalPrompt);
+                
+                resultImg.src = imageUrl;
+                loader.classList.add('hidden');
+                
+                // Show Candle overlay directly on top of baked cake and show instruction box below it
+                candleOverlay.classList.remove('hidden');
+                if (instructionBox) {
+                    instructionBox.classList.remove('hidden');
+                    // Ensure the instruction box text is larger
+                    instructionBox.classList.add('text-lg');
+                }
+                
+                state.cakeBaked = true;
+                saveState();
+                
+                confetti({
+                    particleCount: 50,
+                    spread: 45,
+                    origin: { y: 0.8 }
+                });
+                
+            } catch (err) {
+                console.error("Failed to generate birthday cake artwork", err);
+                container.classList.add('hidden');
+                showCustomAlert("The AI bakery is currently handling high volume! Please try again in a moment.", "Bakery Busy", "fa-cookie-bite");
+            } finally {
+                bakeBtn.disabled = false;
+                bakeBtn.classList.remove('opacity-50', 'pointer-events-none');
+            }
+        }
+
+        // Custom champagne cheers trigger
+        function clinkGlasses() {
+            const left = document.getElementById('glass-left');
+            const right = document.getElementById('glass-right');
+            
+            // Add symmetric translation and rotation classes on click (meet perfectly without crossing)
+            left.classList.add('clink-left');
+            right.classList.add('clink-right');
+            
+            setTimeout(() => {
+                confetti({
+                    particleCount: 80,
+                    spread: 60,
+                    origin: { y: 0.60, x: 0.50 },
+                    colors: ['#2C5E77', '#7CB4CF', '#F4D068']
+                });
+
+                // Display the gorgeous dedicated card message
+                const msgEl = document.getElementById('clink-love-message');
+                if (msgEl) {
+                    msgEl.classList.remove('hidden');
+                }
+            }, 150);
+
+            // Return to starting position with transition delay
+            setTimeout(() => {
+                left.classList.remove('clink-left');
+                right.classList.remove('clink-right');
+            }, 400);
+        }
+
+        async function reStyleQuote(persona) {
+            state.activeQuoteStyle = persona;
+            saveState();
+
+            ['original', 'roast', 'sage', 'hype'].forEach(p => {
+                const button = document.getElementById(`btn-persona-${p}`);
+                if (button) {
+                    if (p === persona) {
+                        button.className = "text-xs bg-brandAccent text-white px-2.5 py-1 rounded font-bold transition-all shadow-sm";
+                    } else {
+                        button.className = "text-xs bg-slate-100 hover:bg-brandSecondary text-brandAccent px-2.5 py-1 rounded transition-all";
+                    }
+                }
+            });
+
+            const quoteBox = document.getElementById('birthday-quote-text');
+            const quoteSign = document.getElementById('quote-signature');
+
+            if (persona === 'original') {
+                quoteBox.innerText = originalQuote;
+                if (quoteSign) quoteSign.innerText = "";
+                return;
+            }
+
+            quoteBox.innerHTML = `<span class="flex items-center gap-2 text-brandAccent font-semibold"><i class="fa-solid fa-spinner animate-spin"></i> Gemini is tailoring quote style...</span>`;
+            if (quoteSign) quoteSign.innerText = "— Generating AI persona text...";
+
+            let query = "";
+            let signature = "";
+            
+            if (persona === 'roast') {
+                query = `The quote from "57 Birthday Wishes For Friends – Happy Birthday Quotes.jpg" is: "${originalQuote}". Rewrite this quote into a friendly but hilarious comedic roast for Maynard on his birthday. Remind him he is in his thirties, cracking joints, aging, being an expat, and finding gray hairs. Keep it emotional but funny, under 45 words.`;
+            } else if (persona === 'sage') {
+                query = `The quote from "57 Birthday Wishes For Friends – Happy Birthday Quotes.jpg" is: "${originalQuote}". Rewrite this quote into the profound wisdom of an ancient sage welcoming Maynard to his thriving thirties. Mention time, adult wisdom, organic tea, and feeling relaxed. Keep it under 45 words.`;
+            } else if (persona === 'hype') {
+                query = `The quote from "57 Birthday Wishes For Friends – Happy Birthday Quotes.jpg" is: "${originalQuote}". Rewrite this quote in an incredibly high-energy, futuristic cyberpunk hacker style dedicated to Maynard's thirties core. Keep it under 45 words.`;
+            }
+
+            const aiResponse = await callGeminiTextAPI(query, "You write custom birthday toasts for a friend named Maynard who is in his thirties. Keep under 45 words. Maintain high aesthetic values.");
+            quoteBox.innerText = `"${aiResponse.replace(/["']/g, "")}"`;
+            if (quoteSign) quoteSign.innerText = signature;
+
+            state.lastQuoteText = aiResponse;
+            saveState();
+        }
+
+        // AI Chat drawer routines
+        function toggleAiDrawer() {
+            const drawer = document.getElementById('ai-drawer');
+            drawer.classList.toggle('translate-x-full');
+        }
+
+        async function sendQuickAiQuery(predefinedText) {
+            appendChatMessage('user', predefinedText);
+            const response = await getOracleAdvice(predefinedText);
+            appendChatMessage('oracle', response);
+        }
+
+        async function sendCustomAiQuery() {
+            const input = document.getElementById('ai-chat-input');
+            const query = input.value.trim();
+            if (!query) return;
+            
+            input.value = '';
+            appendChatMessage('user', query);
+            const response = await getOracleAdvice(query);
+            appendChatMessage('oracle', response);
+        }
+
+        function appendChatMessage(sender, text) {
+            const history = document.getElementById('ai-chat-history');
+            const messageDiv = document.createElement('div');
+            if (sender === 'user') {
+                messageDiv.className = "bg-brandSecondary/40 border border-brandPrimary/30 p-3 rounded-xl text-xs space-y-1 text-right ml-8 shadow-sm";
+                messageDiv.innerHTML = `
+                    <p class="text-brandAccent font-bold">You:</p>
+                    <p class="text-slate-700 leading-relaxed text-left">${text}</p>
+                `;
+            } else {
+                messageDiv.className = "bg-slate-50 border border-brandPrimary/20 p-3 rounded-xl text-xs space-y-1 mr-8 shadow-sm";
+                messageDiv.innerHTML = `
+                    <p class="text-brandAccent font-bold flex items-center gap-1">
+                        <i class="fa-solid fa-wand-magic-sparkles text-brandAccent animate-pulse"></i> Oracle:
+                    </p>
+                    <p class="text-slate-700 leading-relaxed">${text}</p>
+                `;
+            }
+            history.appendChild(messageDiv);
+            history.scrollTop = history.scrollHeight;
+        }
+
+        async function getOracleAdvice(userQuery) {
+            const systemPrompt = "You are the witty, humorous 'Thirties Oracle' chatbot built directly into a light-themed digital birthday card for Maynard. Maynard is currently living overseas. Keep your tone highly friendly, sarcastic, warm, and highly engaging. Discuss funny realities of being in your thirties: back aches, loving cheese boards, sleeping early, vintage arcade games, and complaining about the weather. Keep your response under 3 sentences.";
+            return await callGeminiTextAPI(userQuery, systemPrompt);
+        }
+
+        function loadSavedState() {
+            const saved = localStorage.getItem('maynard_birthday_state');
+            if (saved) {
+                try {
+                    state = JSON.parse(saved);
+                    
+                    // Clean up legacy URLs if they contain old values
+                    if (state.customVideoUrl && (state.customVideoUrl.includes("oceans") || state.customVideoUrl.includes("zencdn"))) {
+                        state.customVideoUrl = '';
+                    }
+                    
+                    currentSlide = state.maxUnlockedSlide;
+                    updateUIForState();
+                    showSlide(currentSlide);
+
+                    if (state.customVideoUrl) {
+                        const inputField = document.getElementById('custom-video-url-input');
+                        if (inputField) {
+                            inputField.value = state.customVideoUrl;
+                        }
+                    }
+
+                    if (state.activeQuoteStyle && state.activeQuoteStyle !== 'original' && state.lastQuoteText) {
+                        setTimeout(() => {
+                            reStyleQuote(state.activeQuoteStyle);
+                        }, 500);
+                    }
+                } catch (e) {
+                    console.error("Error reloading progress", e);
+                }
+            } else {
+                showSlide(1);
+            }
+            updateDots();
+        }
+
+        function saveState() {
+            localStorage.setItem('maynard_birthday_state', JSON.stringify(state));
+        }
+
+        function updateUIForState() {
+            if (state.puzzle1Solved) {
+                document.getElementById('puzzle-box-1').innerHTML = `
+                    <div class="text-center py-4 text-emerald-600 font-semibold flex flex-col items-center gap-2">
+                        <i class="fa-solid fa-shield-halved text-4xl text-brandAccent animate-pulse"></i>
+                        <span>Protocol Activated! Welcome back, Maynard.</span>
+                    </div>
+                `;
+            }
+            if (state.triviaFinished) {
+                const nextBtn = document.getElementById('next-to-3');
+                if(nextBtn) {
+                    nextBtn.classList.remove('pointer-events-none', 'opacity-40');
+                    nextBtn.classList.add('text-brandAccent');
+                }
+                renderTriviaResult();
+            }
+            if (state.cakeBaked) {
+                const container = document.getElementById('ai-cake-container');
+                const resultImg = document.getElementById('ai-cake-result');
+                const loader = document.getElementById('ai-cake-loader');
+                const candleOverlay = document.getElementById('candle-overlay');
+                const instructionBox = document.getElementById('cake-instruction-box');
+                
+                if (container) container.classList.remove('hidden');
+                if (loader) loader.classList.add('hidden');
+                if (resultImg && !resultImg.src) {
+                    resultImg.src = generateLocalMockImage("reloaded cake");
+                }
+                if (candleOverlay && !state.candleExtinguished) {
+                    candleOverlay.classList.remove('hidden');
+                    if (instructionBox) {
+                        instructionBox.classList.remove('hidden');
+                        instructionBox.classList.add('text-lg');
+                    }
+                }
+            }
+            if (state.candleExtinguished) {
+                const flame = document.getElementById('candle-flame');
+                if(flame) flame.classList.add('opacity-0', 'scale-0');
+                const btn = document.getElementById('blow-button');
+                if(btn) {
+                    btn.innerText = "✨ Wish Sent! Slide Unlocked.";
+                    btn.disabled = true;
+                    btn.className = "bg-emerald-50 text-emerald-600 border border-emerald-300 py-1.5 px-3 rounded-lg text-[10px] font-bold transition-all w-full shadow-sm";
+                }
+                const nextBtn = document.getElementById('next-to-4');
+                if(nextBtn) {
+                    nextBtn.classList.remove('pointer-events-none', 'opacity-40');
+                    nextBtn.classList.add('text-brandAccent');
+                }
+            }
+            if (state.videoViewed) {
+                const nextBtn = document.getElementById('next-to-5');
+                if(nextBtn) {
+                    nextBtn.classList.remove('pointer-events-none', 'opacity-40');
+                    nextBtn.classList.add('text-brandAccent');
+                }
+                const briefText = document.getElementById('mission-brief-text');
+                if (briefText) {
+                    briefText.innerHTML = `<strong>Mission Brief:</strong> Video launched in a new window! <span class="text-emerald-600 font-semibold ml-1"><i class="fa-solid fa-circle-check"></i> Unlocked!</span>`;
+                }
+            }
+        }
+
+        window.onload = function() {
+            loadSavedState();
+            loadTriviaQuestion();
+        }
+    </script>
+</body>
+</html>
